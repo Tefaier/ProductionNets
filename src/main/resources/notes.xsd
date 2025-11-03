@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://example.local/soap"
+           targetNamespace="http://example.local/soap"
+           elementFormDefault="qualified">
+
+    <!-- Common Types -->
+    <xs:simpleType name="UUID">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="note">
+        <xs:sequence>
+            <xs:element name="id" type="tns:UUID"/>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="content" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="noteList">
+        <xs:sequence>
+            <xs:element name="note" type="tns:note" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Request/Response for getAllNotes -->
+    <xs:element name="getAllNotesRequest">
+        <xs:complexType>
+            <xs:sequence/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getAllNotesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="notes" type="tns:noteList"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Request/Response for getNoteById -->
+    <xs:element name="getNoteByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="tns:UUID"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getNoteByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="note" type="tns:note" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Request/Response for createNote -->
+    <xs:element name="createNoteRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="content" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createNoteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="note" type="tns:note" minOccurs="0"/>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Request/Response for updateNote -->
+    <xs:element name="updateNoteRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="tns:UUID"/>
+                <xs:element name="title" type="xs:string" minOccurs="0"/>
+                <xs:element name="content" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateNoteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="note" type="tns:note" minOccurs="0"/>
+                <xs:element name="status" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Request/Response for deleteNote -->
+    <xs:element name="deleteNoteRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="tns:UUID"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteNoteResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="deletedNote" type="tns:note" minOccurs="0"/>
+                <xs:element name="status" type="xs:string"/>
+                <xs:element name="message" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
