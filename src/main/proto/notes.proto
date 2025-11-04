@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package notes;
+
+option java_package = "com.prod.nets.grpc";
+option java_outer_classname = "NotesProto";
+option java_multiple_files = true;
+
+// Service definition
+service NotesService {
+  rpc GetAllNotes (GetAllNotesRequest) returns (GetAllNotesResponse);
+  rpc GetNoteById (GetNoteByIdRequest) returns (GetNoteByIdResponse);
+  rpc CreateNote (CreateNoteRequest) returns (CreateNoteResponse);
+  rpc UpdateNote (UpdateNoteRequest) returns (UpdateNoteResponse);
+  rpc DeleteNote (DeleteNoteRequest) returns (DeleteNoteResponse);
+}
+
+// Common messages
+message Note {
+  string id = 1; // UUID as string
+  string title = 2;
+  string content = 3;
+}
+
+message NoteList {
+  repeated Note notes = 1;
+}
+
+// Status enums
+enum OperationStatus {
+  UNKNOWN = 0;
+  SUCCESS = 1;
+  CREATED = 2;
+  UPDATED = 3;
+  DELETED = 4;
+  NOT_FOUND = 5;
+  ERROR = 6;
+}
+
+// Request/Response for GetAllNotes
+message GetAllNotesRequest {
+  // Empty message - no parameters needed
+}
+
+message GetAllNotesResponse {
+  NoteList notes = 1;
+  OperationStatus status = 2;
+}
+
+// Request/Response for GetNoteById
+message GetNoteByIdRequest {
+  string id = 1; // UUID
+}
+
+message GetNoteByIdResponse {
+  Note note = 1;
+  OperationStatus status = 2;
+}
+
+// Request/Response for CreateNote
+message CreateNoteRequest {
+  string title = 1;
+  string content = 2;
+}
+
+message CreateNoteResponse {
+  Note note = 1;
+  OperationStatus status = 2;
+}
+
+// Request/Response for UpdateNote
+message UpdateNoteRequest {
+  string id = 1; // UUID
+  optional string title = 2; // Using optional for minOccurs="0"
+  optional string content = 3; // Using optional for minOccurs="0"
+}
+
+message UpdateNoteResponse {
+  Note note = 1;
+  OperationStatus status = 2;
+}
+
+// Request/Response for DeleteNote
+message DeleteNoteRequest {
+  string id = 1; // UUID
+}
+
+message DeleteNoteResponse {
+  Note deleted_note = 1;
+  OperationStatus status = 2;
+}

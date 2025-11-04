@@ -1,10 +1,8 @@
 package com.prod.nets
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 class NotesService(private val notesRepository: NotesRepository) {

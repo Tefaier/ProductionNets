@@ -36,7 +36,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>5.1.2</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -123,6 +134,8 @@
 				<version>3.8.0</version>
 				<configuration>
 					<protocVersion>${protobuf-java.version}</protocVersion>
+					<javaEnabled>true</javaEnabled>
+					<outputDirectory>${project.basedir}/src/main/java</outputDirectory>
 					<binaryMavenPlugins>
 						<binaryMavenPlugin>
 							<groupId>io.grpc</groupId>
@@ -180,8 +193,9 @@
 					<sources>
 						<source>${project.basedir}/src/main/resources/notes.xsd</source>
 					</sources>
-					<outputDirectory>${project.basedir}/src/main/kotlin/com/prod/nets/generated</outputDirectory>
-					<clearOutputDir>true</clearOutputDir>
+					<packageName>com.prod.nets.soap</packageName>
+					<outputDirectory>${project.basedir}/src/main/java</outputDirectory>
+					<clearOutputDir>false</clearOutputDir>
 				</configuration>
 			</plugin>
 		</plugins>

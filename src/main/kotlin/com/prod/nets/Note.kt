@@ -1,5 +1,8 @@
 package com.prod.nets
 
+import org.springframework.data.redis.core.RedisHash
+import java.io.Serializable
 import java.util.UUID
 
-class Note(val id: UUID, var title: String, var content: String)
+@RedisHash("Note")
+class Note(val id: UUID, var title: String, var content: String) : Serializable
