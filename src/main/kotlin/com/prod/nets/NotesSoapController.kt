@@ -10,7 +10,7 @@ import java.util.*
 @Endpoint
 class NotesSoapController(private val notesService: NotesService) {
     private companion object {
-        const val NAMESPACE_URI = "http://example.com/notes/soap"
+        const val NAMESPACE_URI = "http://example.local/soap"
 
         private fun noteConversion(note: Note): com.prod.nets.soap.Note {
             val newNote = Note()
@@ -25,7 +25,9 @@ class NotesSoapController(private val notesService: NotesService) {
     @ResponsePayload
     fun getAllNotes(@RequestPayload request: GetAllNotesRequest): GetAllNotesResponse {
         val response = GetAllNotesResponse()
-        response.notes.note.addAll(notesService.getAllNotes().map(NotesSoapController::noteConversion))
+        val list = NoteList()
+        list.note.addAll(notesService.getAllNotes().map(NotesSoapController::noteConversion))
+        response.notes = list
         return response
     }
 

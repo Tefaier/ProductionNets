@@ -55,8 +55,8 @@ class NotesGrpcController(private val notesService: NotesService) : NotesService
 
     override fun updateNote(request: UpdateNoteRequest, responseObserver: StreamObserver<UpdateNoteResponse>) {
         val noteDTO = NoteDTO(
-            title = request.title,
-            content = request.content
+            title = if (request.hasTitle()) { request.title } else { null },
+            content = if (request.hasContent()) { request.content } else { null }
         )
         val updatedNote = notesService.updateById(UUID.fromString(request.id), noteDTO)
         if (updatedNote != null) {
