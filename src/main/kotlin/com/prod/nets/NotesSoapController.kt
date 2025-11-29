@@ -13,7 +13,7 @@ class NotesSoapController(private val notesService: NotesService) {
         const val NAMESPACE_URI = "http://example.local/soap"
 
         private fun noteConversion(note: Note): com.prod.nets.soap.Note {
-            val newNote = Note()
+            val newNote = com.prod.nets.soap.Note()
             newNote.id = note.id.toString()
             newNote.title = note.title
             newNote.content = note.content

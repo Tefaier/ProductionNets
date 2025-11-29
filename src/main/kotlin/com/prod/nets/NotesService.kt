@@ -1,18 +1,25 @@
 package com.prod.nets
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClients
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
 import java.util.UUID
+import java.util.concurrent.Executors
 
 @Service
 class NotesService(
     @Autowired private val notesRepository: NotesRepository,
-    @Autowired private val requestTemplate: RestTemplate,
+    @Autowired private val objectMapper: ObjectMapper,
     @Value("\${mail.sender.address}") private val mailHost: String
 ) {
+    private val httpClient = HttpClients.custom().build()
+    private val scheduler = Executors.newCachedThreadPool()
+
     fun getAllNotes(): List<Note> {
         return notesRepository.findAll().map { it }
     }
@@ -51,10 +58,15 @@ class NotesService(
     }
 
     private fun sendInfo(request: SendRequest) {
-        try {
-            requestTemplate.postForLocation("http://$mailHost/api/send", request)
-        } catch (_: Exception) {
+        scheduler.submit {
+            try {
+                val post = HttpPost("http://$mailHost/api/send")
+                post.entity = StringEntity(objectMapper.writeValueAsString(request))
+                post.setHeader("Content-Type", "application/json")
+                httpClient.execute(post)
+            } catch (_: Exception) {
 
+            }
         }
     }
 }

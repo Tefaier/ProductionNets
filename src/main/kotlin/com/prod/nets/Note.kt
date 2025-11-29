@@ -1,8 +1,21 @@
 package com.prod.nets
 
-import org.springframework.data.redis.core.RedisHash
-import java.io.Serializable
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import java.util.UUID
 
-@RedisHash("Note")
-class Note(val id: UUID, var title: String, var content: String) : Serializable
+@Entity
+class Note {
+    @Id
+    lateinit var id: UUID
+    lateinit var title: String
+    lateinit var content: String
+
+    constructor()
+
+    constructor(id: UUID, title: String, content: String) {
+        this.id = id
+        this.title = title
+        this.content = content
+    }
+}

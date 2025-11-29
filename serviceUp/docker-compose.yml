@@ -1,0 +1,175 @@
+version: '3.8'
+name: prod-nets-architect
+services:
+  postgres-1:
+    image: postgres:latest
+    container_name: postgres-1
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - prod_nets_net
+    command: >
+      postgres -c max_connections=1000
+               -c shared_buffers=256MB
+               -c effective_cache_size=768MB
+               -c maintenance_work_mem=64MB
+               -c checkpoint_completion_target=0.7
+               -c wal_buffers=16MB
+               -c default_statistics_target=100
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d database" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nets-proxy-1:
+    image: nets-proxy:latest
+    container_name: nets-proxy-1
+    ports:
+      - "8080:8080"
+    networks:
+      - prod_nets_net
+    volumes:
+      - ./config/proxy-application.properties:/app/config/application.properties
+    command: >
+      sh -c "
+        java -jar /app/app.jar
+      "
+
+  nets-sender-1:
+    image: nets-sender:latest
+    container_name: nets-sender-1
+    depends_on:
+      - nets-sender-sidecar-1
+    networks:
+      - prod_nets_net
+    volumes:
+      - ./config/sender-application.properties:/app/config/application.properties
+      - ./config/sender-secret-application.properties:/app/config/secret.properties
+      - ./scripts/transparent-proxy-setup.sh:/transparent-proxy-setup.sh
+    entrypoint: [ "" ]
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y iptables &&
+        chmod +x /transparent-proxy-setup.sh &&
+        /transparent-proxy-setup.sh nets-sender-sidecar-1 3128 &&
+        java -jar /app/app.jar
+      "
+    cap_add:
+      - NET_ADMIN
+
+  nets-sender-sidecar-1:
+    image: nginx:alpine
+    container_name: nets-sender-sidecar-1
+    volumes:
+      - ./nginx/sender1.conf:/etc/nginx/nginx.conf
+    networks:
+      - prod_nets_net
+
+  nets-sender-2:
+    image: nets-sender:latest
+    container_name: nets-sender-2
+    depends_on:
+      - nets-sender-sidecar-2
+    networks:
+      - prod_nets_net
+    volumes:
+      - ./config/sender-application.properties:/app/config/application.properties
+      - ./config/sender-secret-application.properties:/app/config/secret.properties
+      - ./scripts/transparent-proxy-setup.sh:/transparent-proxy-setup.sh
+    entrypoint: [ "" ]
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y iptables &&
+        chmod +x /transparent-proxy-setup.sh &&
+        /transparent-proxy-setup.sh nets-sender-sidecar-2 3128 &&
+        java -jar /app/app.jar
+      "
+    cap_add:
+      - NET_ADMIN
+
+  nets-sender-sidecar-2:
+    image: nginx:alpine
+    container_name: nets-sender-sidecar-2
+    volumes:
+      - ./nginx/sender2.conf:/etc/nginx/nginx.conf
+    networks:
+      - prod_nets_net
+
+  nets-core-1:
+    image: nets-core:latest
+    container_name: nets-core-1
+    depends_on:
+      - postgres-1
+      - nets-core-sidecar-1
+    networks:
+      - prod_nets_net
+    volumes:
+      - ./config/core-application.properties:/app/config/application.properties
+      - ./scripts/transparent-proxy-setup.sh:/transparent-proxy-setup.sh
+    entrypoint: [ "" ]
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y iptables &&
+        chmod +x /transparent-proxy-setup.sh &&
+        /transparent-proxy-setup.sh nets-core-sidecar-1 3128 &&
+        java -jar /app/app.jar
+      "
+    cap_add:
+      - NET_ADMIN
+
+  nets-core-sidecar-1:
+    image: nginx:alpine
+    container_name: nets-core-sidecar-1
+    volumes:
+      - ./nginx/core1.conf:/etc/nginx/nginx.conf
+    networks:
+      - prod_nets_net
+
+  nets-core-2:
+    image: nets-core:latest
+    container_name: nets-core-2
+    depends_on:
+      - postgres-1
+      - nets-core-sidecar-2
+    networks:
+      - prod_nets_net
+    volumes:
+      - ./config/core-application.properties:/app/config/application.properties
+      - ./scripts/transparent-proxy-setup.sh:/transparent-proxy-setup.sh
+    entrypoint: [ "" ]
+    command: >
+      sh -c "
+        apt-get update &&
+        apt-get install -y iptables &&
+        chmod +x /transparent-proxy-setup.sh &&
+        /transparent-proxy-setup.sh nets-core-sidecar-2 3128 &&
+        java -jar /app/app.jar
+      "
+    cap_add:
+      - NET_ADMIN
+
+  nets-core-sidecar-2:
+    image: nginx:alpine
+    container_name: nets-core-sidecar-2
+    volumes:
+      - ./nginx/core2.conf:/etc/nginx/nginx.conf
+    networks:
+      - prod_nets_net
+
+networks:
+  prod_nets_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
