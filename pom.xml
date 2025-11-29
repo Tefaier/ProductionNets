@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.production.nets</groupId>
 	<artifactId>ProductionNets</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>ProductionNets</name>
 	<description>Project for production nets</description>
 	<url/>
@@ -126,7 +126,6 @@
 
 	<build>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>io.github.ascopes</groupId>
