@@ -70,6 +70,9 @@ services:
     container_name: nets-sender-sidecar-1
     volumes:
       - ./nginx/sender1.conf:/etc/nginx/nginx.conf
+      - ./certificates/example.local.crt:/etc/nginx/protected/cert.crt
+      - ./certificates/example.local.key:/etc/nginx/protected/private.key
+      - ./certificates/ca.crt:/etc/nginx/protected/ca.crt
     networks:
       - prod_nets_net
 
@@ -101,6 +104,9 @@ services:
     container_name: nets-sender-sidecar-2
     volumes:
       - ./nginx/sender2.conf:/etc/nginx/nginx.conf
+      - ./certificates/example.local.crt:/etc/nginx/protected/cert.crt
+      - ./certificates/example.local.key:/etc/nginx/protected/private.key
+      - ./certificates/ca.crt:/etc/nginx/protected/ca.crt
     networks:
       - prod_nets_net
 
@@ -132,6 +138,9 @@ services:
     container_name: nets-core-sidecar-1
     volumes:
       - ./nginx/core1.conf:/etc/nginx/nginx.conf
+      - ./certificates/example.local.crt:/etc/nginx/protected/cert.crt
+      - ./certificates/example.local.key:/etc/nginx/protected/private.key
+      - ./certificates/ca.crt:/etc/nginx/protected/ca.crt
     networks:
       - prod_nets_net
 
@@ -163,6 +172,9 @@ services:
     container_name: nets-core-sidecar-2
     volumes:
       - ./nginx/core2.conf:/etc/nginx/nginx.conf
+      - ./certificates/example.local.crt:/etc/nginx/protected/cert.crt
+      - ./certificates/example.local.key:/etc/nginx/protected/private.key
+      - ./certificates/ca.crt:/etc/nginx/protected/ca.crt
     networks:
       - prod_nets_net
 
